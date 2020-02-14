@@ -4,32 +4,37 @@ import (
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"winter_holiday/data"
 	"winter_holiday/model"
 )
 
 func Regist(c *gin.Context) {
-	username := c.PostForm("username")
-	password := c.PostForm("password")
-	phonenumber := c.PostForm("phonenumber")
-	user:=data.User{username,password,phonenumber}
-	if model.SearchbyName(username) {
-	 if model.InserUser(&user){
-		 c.JSON(http.StatusOK, gin.H{"code":200,"message":"注册成功"})
-	 }else{
-	 	c.JSON(http.StatusOK,gin.H{"code":200,"message":"注册失败"})
-	 }
+	var user data.User
+	err := c.Bind(&user)
+	if err != nil {
+		fmt.Println(err)
+		log.Fatal(err)
+	}
+	if model.SearchbyName(user.Name) {
+		if model.InserUser(&user) {
+			c.JSON(http.StatusOK, gin.H{"code": 200, "message": "注册成功"})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"code": 200, "message": "注册失败"})
+		}
 	} else {
 		c.JSON(http.StatusOK, gin.H{"code": 200, "message": "该用户已经纯在，注册失败"})
 	}
 }
 
 func Login(c *gin.Context) {
-	username := c.PostForm("username")
-	password := c.PostForm("password")
-	phonenumber := c.PostForm("phonenumber")
-	user:=data.User{username,password,phonenumber}
+	var user data.User
+	err := c.Bind(&user)
+	if err != nil {
+		fmt.Println(err)
+		log.Fatal(err)
+	}
 	if model.SearchUser(&user) {
 		session := sessions.Default(c)
 		session.Set("loginuser", user.Name)

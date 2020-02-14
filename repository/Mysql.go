@@ -43,11 +43,9 @@ func SelectDB(db *sql.DB, temp *data.User) bool {
 			fmt.Println(err)
 		}
 		if name == temp.Name && password == temp.Password {
-			fmt.Println(name, password, phonenumber)
 			fmt.Println("验证通过，")
 			return true
 		} else if phonenumber == temp.Phonenumber && password == temp.Password {
-			fmt.Println(name, password, phonenumber)
 			fmt.Println("验证通过，")
 			return true
 		}
@@ -76,16 +74,14 @@ func UpdateDB(db *sql.DB, temp *data.User) {
 
 //检测用户名是否在数据库中已经纯在
 func Isexist(db *sql.DB, Name string) bool {
-	stmt, err := db.Query("select * from user where username = ?;", Name)
+	stmt, err := db.Query("select username from user where username = ?;", Name)
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer stmt.Close()
 	var name string
-	var password string
-	var phonenumber string
 	for stmt.Next() {
-		err := stmt.Scan(&name, &password, &phonenumber)
+		err := stmt.Scan(&name)
 		if err != nil {
 			fmt.Println(err)
 		}
